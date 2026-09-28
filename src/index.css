@@ -1,0 +1,291 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --font-sans: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+*, ::before, ::after {
+  font-family: var(--font-sans);
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #f8fafc;
+  font-family: var(--font-sans);
+  color: #0f172a;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+button, input, optgroup, select, textarea {
+  font-family: var(--font-sans);
+}
+
+/* Light Theme Card & Layout Utilities (Glassmorphism Styled) */
+.light-card {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(16, 185, 129, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.light-card:hover {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 12px 30px -5px rgba(16, 185, 129, 0.12), 0 8px 12px -6px rgba(0, 0, 0, 0.03);
+  transform: translateY(-1px);
+}
+
+.light-card-emerald {
+  background: linear-gradient(135deg, rgba(236, 253, 245, 0.85) 0%, rgba(240, 253, 244, 0.75) 50%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 12px 32px -8px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.25s ease;
+}
+
+.light-card-emerald:hover {
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 16px 36px -8px rgba(16, 185, 129, 0.22);
+}
+
+.light-input {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.light-input:focus {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #059669;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+  outline: none;
+}
+
+/* Modern Glassmorphism Buttons */
+.btn-emerald {
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.92) 0%, rgba(16, 185, 129, 0.92) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-emerald:hover {
+  background: linear-gradient(135deg, rgba(4, 120, 87, 0.95) 0%, rgba(5, 150, 105, 0.95) 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 12px 28px 0 rgba(16, 185, 129, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-emerald:active {
+  transform: translateY(0);
+}
+
+.glass-badge-emerald {
+  background: rgba(16, 185, 129, 0.16);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #047857;
+}
+
+/* Modern Dark Theme & Glassmorphism Utilities */
+.glass-card-dark {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 12px -2px rgba(16, 185, 129, 0.05);
+}
+
+.glass-panel-emerald {
+  background: linear-gradient(135deg, rgba(236, 253, 245, 0.85) 0%, rgba(240, 253, 244, 0.75) 50%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 12px 32px -8px rgba(16, 185, 129, 0.15);
+}
+
+.glass-nav-emerald {
+  background: rgba(6, 78, 59, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px -10px rgba(4, 47, 36, 0.4);
+}
+
+.glass-tile {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-tile:hover {
+  background: rgba(236, 253, 245, 0.85);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 28px -6px rgba(16, 185, 129, 0.18);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(248, 250, 252, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #059669;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+  outline: none;
+}
+
+.btn-cyan-gradient {
+  background: linear-gradient(135deg, #00b4d8 0%, #0077b6 50%, #03045e 100%);
+  background-size: 200% 200%;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px -2px rgba(0, 180, 216, 0.4);
+}
+
+.btn-cyan-gradient:hover {
+  background-position: right center;
+  box-shadow: 0 6px 28px 0 rgba(0, 180, 216, 0.6);
+  transform: translateY(-1px);
+}
+
+.dark-pill-input {
+  background-color: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark-pill-input:focus {
+  border-color: #38bdf8;
+  background-color: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
+  outline: none;
+}
+
+/* Custom Scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mobile Scroll Viewport & Touch Acceleration */
+.mobile-scroll-viewport {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  touch-action: pan-y !important;
+}
+
+/* Soft Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Fullscreen HTML5 QR Camera Overrides & 1:1 Video Container */
+#qr-camera-full-feed-container,
+#peserta-camera-feed-box {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  inset: 0 !important;
+  overflow: hidden !important;
+  border: none !important;
+  background: #020617 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#qr-camera-full-feed-container video,
+#qr-camera-full-feed-container canvas,
+#peserta-camera-feed-box video,
+#peserta-camera-feed-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#qr-camera-full-feed-container.is-cover video,
+#qr-camera-full-feed-container.is-cover canvas,
+#peserta-camera-feed-box.is-cover video,
+#peserta-camera-feed-box.is-cover canvas {
+  object-fit: cover !important;
+}
+
+/* Strict Non-Mirroring Override by Default (Desktop & Mobile) */
+#qr-camera-full-feed-container video,
+#qr-camera-full-feed-container canvas,
+#qr-camera-full-feed-container.no-mirror video,
+#qr-camera-full-feed-container.no-mirror canvas,
+#peserta-camera-feed-box video,
+#peserta-camera-feed-box canvas,
+#peserta-camera-feed-box.no-mirror video,
+#peserta-camera-feed-box.no-mirror canvas {
+  transform: scaleX(1) !important;
+  -webkit-transform: scaleX(1) !important;
+}
+
+/* Optional Mirroring state when explicitly toggled on */
+#qr-camera-full-feed-container.is-mirrored video,
+#qr-camera-full-feed-container.is-mirrored canvas,
+#peserta-camera-feed-box.is-mirrored video,
+#peserta-camera-feed-box.is-mirrored canvas {
+  transform: scaleX(-1) !important;
+  -webkit-transform: scaleX(-1) !important;
+}
+
+#qr-camera-full-feed-container div,
+#peserta-camera-feed-box div {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#qr-camera-full-feed-container img,
+#peserta-camera-feed-box img {
+  display: none !important;
+}
