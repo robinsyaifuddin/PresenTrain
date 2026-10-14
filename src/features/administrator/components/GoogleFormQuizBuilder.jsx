@@ -5,6 +5,7 @@ import {
   Clock, Award, Link, HelpCircle, Save, ChevronUp, ChevronDown, 
   AlignLeft, CheckSquare, Settings, Sparkles, Layers, ShieldCheck, AlertCircle
 } from 'lucide-react';
+import NotificationPopup from '@/components/ui/Feedback/NotificationPopup';
 
 export default function GoogleFormQuizBuilder({ 
   initialQuiz, 
@@ -21,7 +22,7 @@ export default function GoogleFormQuizBuilder({
   const [linkCode, setLinkCode] = useState(initialQuiz?.linkCode || `QUIZ-${Date.now().toString().slice(-4)}`);
   const [instructions, setInstructions] = useState(
     initialQuiz?.instructions || 
-    "1) Pastikan koneksi internet stabil sebelum menekan tombol mulai.\n2) Dilarang menutup atau berpindah halaman selama kuis berlangsung.\n3) Bacalah setiap pertanyaan dengan cermat sebelum memilih opsi jawaban.\n4) Setelah menekan Submit, nilai Anda akan langsung disimpan & dikunci."
+    "1. KONEKSI & PERANGKAT: Pastikan koneksi internet stabil sebelum memulai ujian.\n2. DURASI UJIAN: Waktu pengerjaan dihitung mundur sejak tombol mulai ditekan. Apabila waktu habis, kotak konfirmasi penyerahan akan langsung muncul untuk mengumpulkan lembar jawaban Anda.\n3. INTEGRITAS & ANTI-KECURANGAN: Dilarang keras berpindah tab browser atau beralih ke aplikasi lain selama ujian. Sistem mencatat perpindahan tab dengan batas maksimal 2x peringatan. Pada percobaan ke-3, ujian akan otomatis dihentikan dan jawaban langsung disubmit.\n4. PENGUNCIAN HASIL: Begitu ujian disubmit, jawaban bersifat final, terkunci secara permanen, dan siap diperiksa oleh Administrator Panitia."
   );
 
   const [questions, setQuestions] = useState(
@@ -57,7 +58,6 @@ export default function GoogleFormQuizBuilder({
 
   const showToast = (msg) => {
     setNotification(msg);
-    setTimeout(() => setNotification(''), 3000);
   };
 
   // Calculate total score
@@ -96,7 +96,7 @@ export default function GoogleFormQuizBuilder({
 
   const handleDeleteQuestion = (id) => {
     if (questions.length <= 1) {
-      alert('Minimal harus ada 1 pertanyaan dalam Quiz!');
+      showToast('Minimal harus ada 1 pertanyaan dalam Quiz!');
       return;
     }
     setQuestions(prev => prev.filter(q => q.id !== id));
@@ -155,7 +155,7 @@ export default function GoogleFormQuizBuilder({
     if (!q) return;
     const nextIdx = q.options.length;
     if (nextIdx >= 8) {
-      alert('Maksimal 8 opsi jawaban per pertanyaan.');
+      showToast('Maksimal 8 opsi jawaban per pertanyaan.');
       return;
     }
     const prefix = String.fromCharCode(65 + nextIdx) + '. ';
@@ -168,7 +168,7 @@ export default function GoogleFormQuizBuilder({
   const handleDeleteOption = (qId, optIdx) => {
     const q = questions.find(item => item.id === qId);
     if (!q || q.options.length <= 2) {
-      alert('Minimal 2 opsi jawaban untuk soal Pilihan Ganda!');
+      showToast('Minimal 2 opsi jawaban untuk soal Pilihan Ganda!');
       return;
     }
     const deletedOptVal = q.options[optIdx];
@@ -204,13 +204,13 @@ export default function GoogleFormQuizBuilder({
   const handleSubmitSave = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!title.trim()) {
-      alert('Judul Quiz wajib diisi!');
+      showToast('Judul Quiz wajib diisi!');
       return;
     }
 
     const emptyQ = questions.find(q => !q.text.trim());
     if (emptyQ) {
-      alert('Semua pertanyaan harus memiliki teks pertanyaan!');
+      showToast('Semua pertanyaan harus memiliki teks pertanyaan!');
       setActiveQuestionId(emptyQ.id);
       return;
     }
@@ -240,52 +240,34 @@ export default function GoogleFormQuizBuilder({
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-32 animate-fade-in">
       
-      {/* Toast Notification */}
+      {/* Toast Notification (Centered Green Popup 2 Detik) */}
       {notification && (
-        <div className="fixed top-20 right-4 sm:right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl text-xs font-semibold shadow-2xl flex items-center space-x-2 border border-slate-700 animate-fade-in">
-          <Sparkles className="w-4 h-4 text-emerald-400" />
-          <span>{notification}</span>
-        </div>
+        <NotificationPopup
+          message={notification}
+          onClose={() => setNotification('')}
+          duration={1000}
+          type="success"
+        />
       )}
 
       {/* STICKY RESPONSIVE TOP NAVBAR (ALIGNED WITH PRESTREAM THEME) */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs px-3 sm:px-6 md:px-8 py-3 flex items-center justify-between transition-all">
         <div className="flex items-center space-x-2 sm:space-x-3 truncate mr-2">
           <button
+            type="button"
             onClick={onCancel}
-            className="p-2 sm:px-3 sm:py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center space-x-1.5 transition-colors cursor-pointer shrink-0"
-            title="Kembali ke Daftar Quiz"
+            className="p-2 text-slate-700 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer shrink-0"
+            title="Kembali"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Kembali</span>
+            <ArrowLeft className="w-5 h-5" />
           </button>
-          
-          <div className="h-6 w-px bg-slate-200 hidden sm:block shrink-0" />
-
-          <div className="flex items-center space-x-2 truncate">
-            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-sm shrink-0">
-              <FileText className="w-4 h-4" />
-            </div>
-            <div className="truncate">
-              <div className="flex items-center space-x-2">
-                <span className="text-[10px] text-slate-400 font-semibold shrink-0">{questions.length} Soal</span>
-              </div>
-              <h1 className="text-xs sm:text-sm md:text-base font-extrabold text-slate-900 leading-tight truncate max-w-[160px] sm:max-w-xs md:max-w-md">
-                {title || 'Quiz Tanpa Judul'}
-              </h1>
-            </div>
-          </div>
+          <h1 className="text-sm sm:text-base md:text-lg font-black text-slate-900 leading-tight">
+            Quiz & Test
+          </h1>
         </div>
 
         {/* Action Header Buttons */}
         <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
-          <div className="hidden lg:flex items-center space-x-2 mr-2 px-3 py-1.5 bg-slate-100 rounded-xl text-xs text-slate-600 font-medium">
-            <span>Total Skor:</span>
-            <span className={`font-bold font-mono ${totalScorePoints === 100 ? 'text-emerald-700' : 'text-amber-700'}`}>
-              {totalScorePoints} Poin
-            </span>
-          </div>
-
           <button
             type="button"
             onClick={onCancel}
@@ -306,12 +288,12 @@ export default function GoogleFormQuizBuilder({
       </div>
 
       {/* MAIN GOOGLE FORMS RESPONSIVE CONTAINER */}
-      <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6">
 
         {/* CARD 1: GOOGLE FORM HEADER CARD (PRESTREAM SIGNATURE EMERALD GRADIENT BAR) */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden relative transition-all hover:border-emerald-300">
+        <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden relative transition-all">
           {/* Accent Header Line (Signature Emerald Theme Gradient) */}
-          <div className="h-3.5 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-400 w-full" />
+          <div className="h-2 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-400 w-full" />
           
           <div className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-5">
             {/* Quiz Title Input (Large Responsive Input) */}
@@ -330,36 +312,53 @@ export default function GoogleFormQuizBuilder({
             <div>
               <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Deskripsi & Petunjuk Singkat</label>
               <textarea
-                rows={2}
+                rows={1}
                 placeholder="Deskripsi singkat atau petunjuk umum quiz..."
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full text-xs sm:text-sm text-slate-700 border-b border-slate-200 focus:border-emerald-600 focus:bg-emerald-50/20 px-2 py-1.5 outline-none transition-all placeholder:text-slate-400"
+                ref={(el) => {
+                  if (el) {
+                    el.style.height = 'auto';
+                    el.style.height = `${el.scrollHeight}px`;
+                  }
+                }}
+                onInput={(e) => {
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                className="w-full text-xs sm:text-sm text-slate-700 border-b border-slate-200 focus:border-emerald-600 focus:bg-emerald-50/20 px-2 py-1.5 outline-none transition-all placeholder:text-slate-400 resize-none overflow-hidden"
               />
             </div>
 
             {/* Quiz Key Parameters Summary Pills / Toggle Accordion */}
             <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                <span className="px-2.5 py-1 bg-amber-100 text-amber-900 font-extrabold text-[11px] rounded-full border border-amber-300">
-                  {type === 'pretest' ? 'Pre-Test' : type === 'posttest' ? 'Post-Test' : 'Evaluasi'}
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-emerald-800 font-extrabold text-xs">
+                  {type === 'pretest' ? 'Pre-Test' : (type === 'midtest' || type === 'evaluasi' ? 'Mid-Test' : 'Post-Test')}
                 </span>
-                <span className="px-2.5 py-1 bg-slate-100 text-slate-700 font-semibold text-[11px] rounded-full flex items-center space-x-1">
+                <span className="text-slate-700 font-semibold text-xs flex items-center space-x-1">
                   <Clock className="w-3.5 h-3.5 text-slate-500" />
                   <span>{durationMinutes} Menit</span>
                 </span>
-                <span className="px-2.5 py-1 bg-emerald-100 text-emerald-900 font-bold text-[11px] rounded-full flex items-center space-x-1">
+                <span className="text-emerald-700 font-bold text-xs flex items-center space-x-1">
                   <Award className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Passing Grade: {passingGrade} Poin</span>
+                </span>
+                <span className="text-emerald-800 font-bold text-xs flex items-center space-x-1">
+                  <span>Total Skor: {totalScorePoints} Poin</span>
                 </span>
               </div>
 
               <button
                 type="button"
                 onClick={() => setShowSettingsAccordion(!showSettingsAccordion)}
-                className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs rounded-xl flex items-center justify-center space-x-1.5 border border-emerald-200 transition-colors cursor-pointer w-full sm:w-auto"
+                className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-emerald-800 font-bold text-xs rounded-xl flex items-center justify-center space-x-1.5 border border-slate-200 transition-colors cursor-pointer w-full sm:w-auto"
               >
-                <Settings className="w-3.5 h-3.5 text-emerald-700" />
+                <Settings className="w-3.5 h-3.5 text-emerald-600" />
                 <span>{showSettingsAccordion ? 'Sembunyikan Setting' : 'Pengaturan Ujian'}</span>
                 {showSettingsAccordion ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
@@ -367,23 +366,23 @@ export default function GoogleFormQuizBuilder({
 
             {/* EXPANDABLE PARAMETER SETTINGS */}
             {showSettingsAccordion && (
-              <div className="p-4 sm:p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-4 text-xs animate-fade-in">
+              <div className="p-4 sm:p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4 text-xs animate-fade-in">
                 <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px] flex items-center space-x-1.5">
                   <Settings className="w-4 h-4 text-emerald-600" />
                   <span>Pengaturan & Rule Ujian (Form Settings)</span>
                 </h4>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="block font-semibold text-slate-700 mb-1">Jenis Quiz</label>
                     <select
                       value={type}
                       onChange={(e) => setType(e.target.value)}
-                      className="w-full px-3 py-2 bg-white rounded-xl border border-slate-300 font-bold text-slate-800 outline-none focus:border-emerald-600"
+                      className="w-full px-3 py-2 bg-white rounded-xl border border-slate-300 font-bold text-slate-800 outline-none focus:border-emerald-600 cursor-pointer"
                     >
                       <option value="pretest">Pre-Test (Awal)</option>
+                      <option value="midtest">Mid-Test (Tengah)</option>
                       <option value="posttest">Post-Test (Akhir)</option>
-                      <option value="evaluasi">Evaluasi Pelatihan</option>
                     </select>
                   </div>
 
@@ -410,16 +409,6 @@ export default function GoogleFormQuizBuilder({
                       className="w-full px-3 py-2 bg-white rounded-xl border border-slate-300 font-medium text-slate-800 outline-none focus:border-emerald-600"
                     />
                   </div>
-
-                  <div>
-                    <label className="block font-semibold text-slate-700 mb-1">Kode Link Akses Unik</label>
-                    <input
-                      type="text"
-                      value={linkCode}
-                      onChange={(e) => setLinkCode(e.target.value)}
-                      className="w-full px-3 py-2 bg-white rounded-xl border border-slate-300 font-mono font-medium text-slate-800 uppercase outline-none focus:border-emerald-600"
-                    />
-                  </div>
                 </div>
 
                 <div>
@@ -434,10 +423,24 @@ export default function GoogleFormQuizBuilder({
                     </button>
                   </div>
                   <textarea
-                    rows={3}
+                    rows={1}
                     value={instructions}
-                    onChange={(e) => setInstructions(e.target.value)}
-                    className="w-full p-3 bg-white rounded-xl border border-slate-300 text-slate-800 font-medium leading-relaxed outline-none focus:border-emerald-600"
+                    ref={(el) => {
+                      if (el) {
+                        el.style.height = 'auto';
+                        el.style.height = `${el.scrollHeight}px`;
+                      }
+                    }}
+                    onInput={(e) => {
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
+                    onChange={(e) => {
+                      setInstructions(e.target.value);
+                      e.target.style.height = 'auto';
+                      e.target.style.height = `${e.target.scrollHeight}px`;
+                    }}
+                    className="w-full p-3 bg-white rounded-xl border border-slate-300 text-slate-800 font-medium leading-relaxed outline-none focus:border-emerald-600 resize-none overflow-hidden"
                   />
                 </div>
               </div>
@@ -480,31 +483,23 @@ export default function GoogleFormQuizBuilder({
               <div
                 key={q.id}
                 onClick={() => setActiveQuestionId(q.id)}
-                className={`bg-white rounded-3xl border-2 transition-all shadow-xs relative overflow-hidden ${
-                  isActive ? 'border-emerald-600 shadow-md ring-2 ring-emerald-100' : 'border-slate-200/90 hover:border-slate-300'
+                className={`bg-white rounded-xl border transition-colors shadow-xs relative overflow-hidden ${
+                  isActive ? 'border-emerald-600' : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
                 {/* Active Left Indicator Bar */}
                 {isActive && (
-                  <div className="absolute top-0 left-0 bottom-0 w-2 bg-emerald-600 rounded-l-3xl" />
+                  <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-emerald-600 rounded-l-xl" />
                 )}
 
-                <div className="p-4 sm:p-6 space-y-4">
+                <div className="p-4 sm:p-5 space-y-3.5">
                   {/* Card Header Row (Question Number, Type Selector, Score Weight) */}
-                  <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-slate-100 pb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
                     <div className="flex items-center space-x-2">
-                      <span className="w-6 h-6 rounded-lg bg-slate-900 text-white text-xs font-bold flex items-center justify-center shrink-0">
-                        {index + 1}
-                      </span>
                       <span className="text-xs font-bold text-slate-800">Pertanyaan {index + 1}</span>
-                      <span className={`px-2.5 py-0.5 text-[10px] font-extrabold uppercase rounded-full border ${
-                        q.type === 'multiple_choice' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-amber-100 text-amber-800 border-amber-200'
-                      }`}>
-                        {q.type === 'multiple_choice' ? 'Pilihan Ganda' : 'Essay'}
-                      </span>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <div className="flex flex-wrap items-center gap-3 text-xs">
                       {/* Tipe Soal Selector Dropdown */}
                       <div className="flex items-center space-x-1.5">
                         {q.type === 'multiple_choice' ? <CheckSquare className="w-4 h-4 text-emerald-600" /> : <AlignLeft className="w-4 h-4 text-amber-600" />}
@@ -514,15 +509,15 @@ export default function GoogleFormQuizBuilder({
                             type: e.target.value,
                             correctAnswer: e.target.value === 'multiple_choice' ? (q.options?.[0] || 'A. Opsi A') : 'Kunci jawaban acuan essay...'
                           })}
-                          className="px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-800 outline-none focus:border-emerald-600"
+                          className="px-2 py-1 bg-white border border-slate-200 rounded-md font-bold text-slate-800 outline-none focus:border-emerald-600 text-xs cursor-pointer"
                         >
                           <option value="multiple_choice">Pilihan Ganda</option>
                           <option value="essay">Isian / Essay</option>
                         </select>
                       </div>
 
-                      {/* Score Weight Input */}
-                      <div className="flex items-center space-x-1 bg-slate-50 px-2 py-1 rounded-xl border border-slate-200">
+                      {/* Direct Inline Score Input without bulky outer shapes or spin buttons */}
+                      <div className="flex items-center space-x-1 text-xs">
                         <span className="text-slate-500 font-semibold text-[11px]">Skor:</span>
                         <input
                           type="number"
@@ -530,7 +525,7 @@ export default function GoogleFormQuizBuilder({
                           max={100}
                           value={q.scoreWeight || 25}
                           onChange={(e) => handleUpdateQuestion(q.id, { scoreWeight: parseInt(e.target.value, 10) || 0 })}
-                          className="w-12 px-1 py-0.5 bg-white border border-slate-300 rounded-lg font-bold text-slate-900 font-mono text-center outline-none focus:border-emerald-600 text-xs"
+                          className="w-10 text-center font-bold text-slate-900 border-b border-slate-300 focus:border-emerald-600 outline-none bg-transparent text-xs py-0.5"
                         />
                         <span className="text-slate-500 font-semibold text-[11px]">Poin</span>
                       </div>
@@ -540,20 +535,34 @@ export default function GoogleFormQuizBuilder({
                   {/* Question Text Area */}
                   <div>
                     <textarea
-                      rows={2}
+                      rows={1}
                       placeholder="Tuliskan pertanyaan / soal di sini..."
                       value={q.text}
-                      onChange={(e) => handleUpdateQuestion(q.id, { text: e.target.value })}
-                      className="w-full text-xs sm:text-sm font-semibold text-slate-900 bg-slate-50 focus:bg-white border border-slate-200 focus:border-emerald-600 p-3 rounded-2xl outline-none transition-all placeholder:text-slate-400"
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = 'auto';
+                          el.style.height = `${el.scrollHeight}px`;
+                        }
+                      }}
+                      onInput={(e) => {
+                        e.target.style.height = 'auto';
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
+                      onChange={(e) => {
+                        handleUpdateQuestion(q.id, { text: e.target.value });
+                        e.target.style.height = 'auto';
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
+                      className="w-full text-xs sm:text-sm font-semibold text-slate-900 bg-slate-50/50 focus:bg-white border border-slate-200 focus:border-emerald-600 p-2.5 rounded-md outline-none transition-all placeholder:text-slate-400 resize-none overflow-hidden"
                     />
                   </div>
 
                   {/* CONTENT FOR MULTIPLE CHOICE */}
                   {q.type === 'multiple_choice' && (
-                    <div className="space-y-2.5 pt-1">
-                      <div className="flex flex-wrap items-center justify-between text-xs font-bold text-slate-600 mb-1 gap-1">
+                    <div className="space-y-2 pt-1">
+                      <div className="flex flex-wrap items-center justify-between text-xs font-semibold text-slate-600 mb-1 gap-1">
                         <span>Opsi Jawaban (Pilih radio button untuk Kunci Jawaban Benar):</span>
-                        <span className="text-[11px] text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                        <span className="text-[11px] text-emerald-700 font-medium">
                           Kunci: {q.correctAnswer}
                         </span>
                       </div>
@@ -567,8 +576,8 @@ export default function GoogleFormQuizBuilder({
                           return (
                             <div 
                               key={optIdx} 
-                              className={`flex items-center space-x-2 p-2 rounded-2xl border transition-all ${
-                                isCorrect ? 'bg-emerald-50/90 border-emerald-400 ring-1 ring-emerald-200' : 'bg-white border-slate-200'
+                              className={`flex items-center space-x-2 p-2 rounded-md border transition-colors ${
+                                isCorrect ? 'bg-emerald-50/40 border-emerald-400' : 'bg-white border-slate-200'
                               }`}
                             >
                               {/* Radio Button for selecting correct answer */}
@@ -594,8 +603,8 @@ export default function GoogleFormQuizBuilder({
                               />
 
                               {isCorrect && (
-                                <span className="px-2 py-0.5 bg-emerald-600 text-white text-[10px] font-bold rounded-md shrink-0 flex items-center space-x-1">
-                                  <CheckCircle2 className="w-3 h-3" />
+                                <span className="text-emerald-700 text-[11px] font-bold shrink-0 flex items-center space-x-1 px-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                                   <span className="hidden sm:inline">Kunci Benar</span>
                                 </span>
                               )}
@@ -604,7 +613,7 @@ export default function GoogleFormQuizBuilder({
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteOption(q.id, optIdx)}
-                                  className="p-1 rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                                  className="p-1 rounded-md text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
                                   title="Hapus Opsi"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -620,7 +629,7 @@ export default function GoogleFormQuizBuilder({
                         <button
                           type="button"
                           onClick={() => handleAddOption(q.id)}
-                          className="text-xs font-bold text-emerald-800 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200/90 transition-colors cursor-pointer flex items-center space-x-1"
+                          className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50/50 hover:bg-emerald-50 px-3 py-1.5 rounded-md border border-emerald-200/80 transition-colors cursor-pointer flex items-center space-x-1"
                         >
                           <Plus className="w-3.5 h-3.5 text-emerald-600" />
                           <span>Tambah Opsi ({String.fromCharCode(65 + (q.options?.length || 0))})</span>
@@ -641,11 +650,25 @@ export default function GoogleFormQuizBuilder({
                           Kunci Jawaban / Panduan Penilaian Essay (Rubrik Administrator):
                         </label>
                         <textarea
-                          rows={2}
+                          rows={1}
                           placeholder="Tuliskan acuan poin kunci jawaban essay di sini untuk panduan penilaian..."
                           value={q.correctAnswer || ''}
-                          onChange={(e) => handleUpdateQuestion(q.id, { correctAnswer: e.target.value })}
-                          className="w-full p-3 bg-amber-50/60 rounded-2xl border border-amber-200 text-amber-900 font-medium outline-none focus:border-amber-400"
+                          ref={(el) => {
+                            if (el) {
+                              el.style.height = 'auto';
+                              el.style.height = `${el.scrollHeight}px`;
+                            }
+                          }}
+                          onInput={(e) => {
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                          }}
+                          onChange={(e) => {
+                            handleUpdateQuestion(q.id, { correctAnswer: e.target.value });
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                          }}
+                          className="w-full p-3 bg-amber-50/60 rounded-2xl border border-amber-200 text-amber-900 font-medium outline-none focus:border-amber-400 resize-none overflow-hidden"
                         />
                       </div>
                     </div>

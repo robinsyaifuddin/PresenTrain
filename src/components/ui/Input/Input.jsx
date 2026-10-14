@@ -21,12 +21,12 @@ export default function Input({
           </div>
         )}
         <input
-          className={`w-full rounded-2xl bg-white border text-xs md:text-sm font-medium transition-all ${
-            Icon ? 'pl-10' : 'px-4'
-          } py-2.5 ${
+          className={`w-full rounded-md bg-white border text-xs md:text-sm font-medium transition-colors duration-150 ${
+            Icon ? 'pl-9 sm:pl-10' : 'px-3 sm:px-4'
+          } py-2 sm:py-2.5 ${
             error
-              ? 'border-rose-300 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
-              : 'border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'
+              ? 'border-rose-300 focus:border-rose-500'
+              : 'border-slate-200 focus:border-emerald-500'
           } outline-none ${className}`}
           {...props}
         />

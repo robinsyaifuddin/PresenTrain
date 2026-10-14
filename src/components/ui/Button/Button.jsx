@@ -10,19 +10,19 @@ export default function Button({
   type = 'button',
   ...props 
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-bold rounded-2xl transition-all cursor-pointer focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'inline-flex items-center justify-center font-bold rounded-md transition-colors duration-150 cursor-pointer focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variants = {
-    primary: 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 active:scale-[0.98]',
-    secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-[0.98]',
-    outline: 'border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-xs active:scale-[0.98]',
-    danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20 active:scale-[0.98]',
+    primary: 'bg-emerald-600 hover:bg-emerald-700 text-white active:opacity-90',
+    secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-700 active:opacity-90',
+    outline: 'border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 active:opacity-90',
+    danger: 'bg-rose-600 hover:bg-rose-700 text-white active:opacity-90',
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-xs',
-    md: 'px-4 py-2.5 text-xs md:text-sm',
-    lg: 'px-6 py-3.5 text-sm md:text-base',
+    sm: 'px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs',
+    md: 'px-3 py-2 sm:px-4 sm:py-2.5 text-xs md:text-sm',
+    lg: 'px-4 py-2.5 sm:px-6 sm:py-3.5 text-xs sm:text-sm md:text-base',
   };
 
   return (

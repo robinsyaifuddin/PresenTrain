@@ -47,7 +47,7 @@ export default function BannerSlider({ customSlides }) {
 
   return (
     <div 
-      className="relative w-full rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 group bg-slate-900"
+      className="relative w-full rounded-xl overflow-hidden shadow-lg border border-slate-200/80 group bg-slate-900"
       style={{ aspectRatio: '200 / 87.503' }}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}

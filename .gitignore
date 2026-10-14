@@ -41,6 +41,7 @@ backend/public/build
 
 # Build Output
 dist/
+dist.zip
 dist-ssr/
 
 # Database Local & Log Files

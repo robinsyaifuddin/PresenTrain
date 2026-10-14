@@ -83,8 +83,20 @@ export function useAppRouter(currentUser, initialQuizCode = null) {
     }
   }, []);
 
+  // Helper to clear any lingering notification from previous views
+  const dismissNotifications = () => {
+    if (typeof window !== 'undefined') {
+      if (typeof window.presentrainCloseNotification === 'function') {
+        window.presentrainCloseNotification();
+      }
+      window.dispatchEvent(new Event('presentrain:clearnotifications'));
+    }
+  };
+
   // Handler pergantian Tab dari Komponen UI (Sidebar, BottomNav, TopBar, dsb)
   const setActiveTab = useCallback((nextTabId) => {
+    dismissNotifications();
+
     setRouterState((prev) => {
       if (prev.tabId === nextTabId) return prev;
       return {
@@ -101,6 +113,7 @@ export function useAppRouter(currentUser, initialQuizCode = null) {
 
   // Handler saat user berhasil Login
   const handleUserLoggedIn = useCallback((userObj) => {
+    dismissNotifications();
     const defaultTab = getDefaultTabForRole(userObj.role);
     setRouterState({
       tabId: defaultTab,
@@ -114,6 +127,7 @@ export function useAppRouter(currentUser, initialQuizCode = null) {
 
   // Handler saat user Logout
   const handleUserLoggedOut = useCallback(() => {
+    dismissNotifications();
     setRouterState({
       tabId: '',
       routeType: 'auth',
@@ -131,6 +145,7 @@ export function useAppRouter(currentUser, initialQuizCode = null) {
     if (typeof window === 'undefined') return;
 
     const handlePopState = () => {
+      dismissNotifications();
       const currentPath = window.location.pathname;
       const resolved = resolveCurrentRoute(currentPath, currentUser);
 
@@ -180,12 +195,29 @@ export function useAppRouter(currentUser, initialQuizCode = null) {
     const resolved = resolveCurrentRoute(currentPath, currentUser);
 
     if (resolved.type === 'dashboard' && currentUser) {
-      const targetUrl = formatRouteUrl(currentUser.role, resolved.tabId);
+      const targetTab = resolved.tabId || getDefaultTabForRole(currentUser.role);
+      const targetUrl = formatRouteUrl(currentUser.role, targetTab);
+      setRouterState((prev) => ({
+        ...prev,
+        tabId: targetTab,
+        routeType: 'dashboard',
+      }));
       if (currentPath !== targetUrl) {
-        window.history.replaceState({ role: currentUser.role, tabId: resolved.tabId }, '', targetUrl);
+        window.history.replaceState({ role: currentUser.role, tabId: targetTab }, '', targetUrl);
       }
-    } else if (resolved.type === 'auth' && !currentUser && currentPath !== '/' && !currentPath.startsWith('/quiz') && !currentPath.startsWith('/sesi-') && !currentPath.startsWith('/ABSEN-SESI-')) {
-      window.history.replaceState({}, '', '/');
+    } else if (resolved.type === 'auth' && !currentUser) {
+      const hasGoogleAuthParam = typeof window !== 'undefined' && window.location.search.includes('google_auth');
+      const isExplicitAuth = currentPath.startsWith('/login') || 
+                             currentPath.startsWith('/register') || 
+                             currentPath.startsWith('/masuk') || 
+                             currentPath.startsWith('/daftar') || 
+                             currentPath.startsWith('/quiz') || 
+                             currentPath.startsWith('/sesi-') || 
+                             currentPath.startsWith('/ABSEN-SESI-') ||
+                             hasGoogleAuthParam;
+      if (!isExplicitAuth && currentPath !== '/') {
+        window.history.replaceState({}, '', '/');
+      }
     }
   }, [currentUser]);
 

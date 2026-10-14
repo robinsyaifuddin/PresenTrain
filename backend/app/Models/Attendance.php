@@ -15,6 +15,7 @@ class Attendance extends Model
         'scanned_by',
         'scanned_at',
         'status',
+        'note',
         'source',
     ];
 

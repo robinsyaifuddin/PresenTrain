@@ -1,0 +1,17 @@
+<?php
+
+use Illuminate\Http\Request;
+
+define('LARAVEL_START', microtime(true));
+
+// 1. Cek Maintenance Mode dari folder backend di luar public_html
+if (file_exists($maintenance = __DIR__.'/../backend/storage/framework/maintenance.php')) {
+    require $maintenance;
+}
+
+// 2. Register Composer Auto Loader dari folder backend di luar public_html
+require __DIR__.'/../backend/vendor/autoload.php';
+
+// 3. Bootstrap Laravel App & Tangani Request Masuk
+(require_once __DIR__.'/../backend/bootstrap/app.php')
+    ->handleRequest(Request::capture());

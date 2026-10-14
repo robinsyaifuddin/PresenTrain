@@ -8,11 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 $accounts = [
-    ['Email' => 'superadmin@presentraining.com', 'Pass' => 'admin123', 'ExpectedRole' => 'super_admin'],
-    ['Email' => 'admin@presentrain.com', 'Pass' => 'admin123', 'ExpectedRole' => 'super_admin'],
-    ['Email' => 'admin@presentraining.com', 'Pass' => 'admin123', 'ExpectedRole' => 'admin'],
-    ['Email' => 'panitia@presentrain.com', 'Pass' => 'admin123', 'ExpectedRole' => 'admin'],
-    ['Email' => 'peserta@presentraining.com', 'Pass' => 'peserta123', 'ExpectedRole' => 'participant'],
+    ['Email' => 'admin.utama@presentrain.com', 'Pass' => 'AdminUtama123!', 'ExpectedRole' => 'super_admin'],
+    ['Email' => 'admin.panitia@presentrain.com', 'Pass' => 'AdminPanitia123!', 'ExpectedRole' => 'admin'],
 ];
 
 echo "=== HASIL VERIFIKASI AKUN LOGIN ===\n";

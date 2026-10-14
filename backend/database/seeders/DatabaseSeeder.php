@@ -17,12 +17,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Super Admin User
-        $superAdmin = User::firstOrCreate(
-            ['email' => 'admin@presentrain.com'],
+        // 1. Create Super Admin User (Akun Utama)
+        $superAdmin = User::updateOrCreate(
+            ['email' => 'admin.utama@presentrain.com'],
             [
                 'name'          => 'Dr. Irfan Subagyo, M.Kom',
-                'password'      => Hash::make('admin123'),
+                'password'      => Hash::make('AdminUtama123!'),
                 'role'          => 'super_admin',
                 'phone'         => '081234567890',
                 'instansi'      => 'Panitia Pusat PresenTrain',
@@ -30,134 +30,135 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 2. Create Panitia / Admin User
-        $panitia = User::firstOrCreate(
-            ['email' => 'panitia@presentrain.com'],
-            [
-                'name'          => 'Rian Firmansyah (Panitia)',
-                'password'      => Hash::make('panitia123'),
-                'role'          => 'admin',
-                'phone'         => '085678901234',
-                'instansi'      => 'Divisi Registrasi & Scanner',
-                'user_qr_token' => 'ABSEN-PANITIA-RIAN-002',
-            ]
-        );
-
-        // 3. Create Sample Participants
-        $participantsData = [
-            [
-                'name'          => 'Budi Santoso',
-                'email'         => 'peserta@presentraining.com',
-                'password'      => Hash::make('peserta123'),
-                'role'          => 'participant',
-                'phone'         => '081298765432',
-                'instansi'      => 'Universitas Gadjah Mada',
-                'user_qr_token' => 'ABSEN-PESERTA-BUDI-881023',
-            ],
-            [
-                'name'          => 'Siti Rahmawati',
-                'email'         => 'siti.rahma@gmail.com',
-                'password'      => Hash::make('password123'),
-                'role'          => 'participant',
-                'phone'         => '082134567891',
-                'instansi'      => 'Institut Teknologi Bandung',
-                'user_qr_token' => 'ABSEN-PESERTA-SITI-449102',
-            ],
-            [
-                'name'          => 'Ahmad Fauzi',
-                'email'         => 'fauzi.ahmad@corporate.id',
-                'password'      => Hash::make('password123'),
-                'role'          => 'participant',
-                'phone'         => '087789012345',
-                'instansi'      => 'PT Teknologi Maju Nusantara',
-                'user_qr_token' => 'ABSEN-PESERTA-FAUZI-992314',
-            ],
-            [
-                'name'          => 'Dewi Lestari',
-                'email'         => 'dewi.lestari@poltek.ac.id',
-                'password'      => Hash::make('password123'),
-                'role'          => 'participant',
-                'phone'         => '085234567890',
-                'instansi'      => 'Politeknik Negeri Jakarta',
-                'user_qr_token' => 'ABSEN-PESERTA-DEWI-112345',
-            ],
-            [
-                'name'          => 'Eko Prasetyo',
-                'email'         => 'eko.prasetyo@univ.ac.id',
-                'password'      => Hash::make('password123'),
-                'role'          => 'participant',
-                'phone'         => '081398765401',
-                'instansi'      => 'Universitas Brawijaya',
-                'user_qr_token' => 'ABSEN-PESERTA-EKO-776231',
-            ],
-        ];
+        // 3. Sample Participants (Dikosongkan - tidak ada akun demo / dummy peserta)
+        $participantsData = [];
 
         $users = [];
         foreach ($participantsData as $p) {
-            $users[] = User::firstOrCreate(['email' => $p['email']], $p);
+            $users[] = User::updateOrCreate(['email' => $p['email']], $p);
         }
 
         // 4. Create Master Training
-        $training = Training::firstOrCreate(
-            ['code' => 'TR-2026-001'],
+        $training = Training::updateOrCreate(
+            ['code' => 'TR-HMI-BDL-2026'],
             [
-                'title'       => 'Pelatihan Digital & Modern Web Development 2026',
-                'description' => 'Program pelatihan intensif arsitektur web modern, REST API performa tinggi, dan digital presensi QR code.',
-                'location'    => 'Auditorium Utama & Online Class',
-                'start_date'  => '2026-09-20',
-                'end_date'    => '2026-09-22',
+                'title'       => 'Basic Training Raya HMI Cabang Bandar Lampung 2026',
+                'description' => 'Program perkaderan utama HMI Cabang Bandar Lampung 2026.',
+                'location'    => 'Sekretariat HMI Cabang Bandar Lampung',
+                'start_date'  => '2026-10-09',
+                'end_date'    => '2026-10-12',
                 'status'      => 'Aktif',
                 'created_by'  => $superAdmin->id,
+                'banner_slides' => [
+                    '/slide/BALIHO BTR FIX.jpg',
+                    '/slide/BALIHO BTR FIX (1).jpg',
+                    '/slide/BALIHO BTR FIX (2).jpg',
+                    '/slide/BALIHO BTR FIX (3).jpg'
+                ]
             ]
         );
 
-        // 5. Create Sessions
+        // 5. Create 9 Main Training Sessions (Materi Pokok LK 1)
         $sessionsData = [
             [
                 'session_code' => 'SES-01',
-                'title'        => 'Sesi 1: Keynote & Pembukaan Training',
-                'speaker'      => 'Dr. Irfan Subagyo',
-                'room'         => 'Hall A - Lantai 3',
-                'session_date' => '2026-09-20',
+                'title'        => 'Filsafat dan Logika',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-10',
                 'start_time'   => '08:00:00',
-                'end_time'     => '09:30:00',
-                'status'       => 'Selesai',
-            ],
-            [
-                'session_code' => 'SES-02',
-                'title'        => 'Sesi 2: Arsitektur REST API & Optimasi Server',
-                'speaker'      => 'Rian Firmansyah, S.Kom',
-                'room'         => 'Lab Komputer 1 - Lt 2',
-                'session_date' => '2026-09-20',
-                'start_time'   => '10:00:00',
                 'end_time'     => '12:00:00',
                 'status'       => 'Berlangsung',
             ],
             [
-                'session_code' => 'SES-03',
-                'title'        => 'Sesi 3: Implementasi Scanner & QR Code Realtime',
-                'speaker'      => 'Sarah Wijaya, M.T',
-                'room'         => 'Lab Komputer 2 - Lt 2',
-                'session_date' => '2026-09-21',
+                'session_code' => 'SES-02',
+                'title'        => 'Nilai-Nilai Dasar Perjuangan (NDP) HMI – Sesi 1',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-10',
                 'start_time'   => '13:30:00',
                 'end_time'     => '15:30:00',
                 'status'       => 'Mendatang',
             ],
             [
+                'session_code' => 'SES-03',
+                'title'        => 'Nilai-Nilai Dasar Perjuangan (NDP) HMI – Sesi 2 & 3',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-10',
+                'start_time'   => '16:00:00',
+                'end_time'     => '22:00:00',
+                'status'       => 'Mendatang',
+            ],
+            [
                 'session_code' => 'SES-04',
-                'title'        => 'Sesi 4: Deployment & Benchmarking Shared Hosting',
-                'speaker'      => 'Dr. Irfan Subagyo',
-                'room'         => 'Auditorium Utama',
-                'session_date' => '2026-09-22',
-                'start_time'   => '09:00:00',
-                'end_time'     => '11:30:00',
+                'title'        => 'Sejarah Peradaban Islam',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-11',
+                'start_time'   => '08:00:00',
+                'end_time'     => '12:00:00',
+                'status'       => 'Mendatang',
+            ],
+            [
+                'session_code' => 'SES-05',
+                'title'        => 'Sejarah Perjuangan HMI',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-11',
+                'start_time'   => '13:30:00',
+                'end_time'     => '15:30:00',
+                'status'       => 'Mendatang',
+            ],
+            [
+                'session_code' => 'SES-06',
+                'title'        => 'Kelembagaan HMI',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-11',
+                'start_time'   => '16:00:00',
+                'end_time'     => '18:00:00',
+                'status'       => 'Mendatang',
+            ],
+            [
+                'session_code' => 'SES-07',
+                'title'        => 'Konstitusi HMI & Pedoman Perkaderan (AD/ART)',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-11',
+                'start_time'   => '20:00:00',
+                'end_time'     => '23:15:00',
+                'status'       => 'Mendatang',
+            ],
+            [
+                'session_code' => 'SES-08',
+                'title'        => 'Mission HMI',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-12',
+                'start_time'   => '08:00:00',
+                'end_time'     => '15:30:00',
+                'status'       => 'Mendatang',
+            ],
+            [
+                'session_code' => 'SES-09',
+                'title'        => 'Kepemimpinan, Manajemen, dan Organisasi (KMO)',
+                'speaker'      => '-',
+                'room'         => 'Ruang Kelas',
+                'session_date' => '2026-10-12',
+                'start_time'   => '16:00:00',
+                'end_time'     => '22:00:00',
                 'status'       => 'Mendatang',
             ],
         ];
 
+        // Hapus sesi lama yang tidak termasuk dalam 9 sesi aktif
+        $activeCodes = array_column($sessionsData, 'session_code');
+        TrainingSession::where('training_id', $training->id)->whereNotIn('session_code', $activeCodes)->delete();
+
         $sessions = [];
         foreach ($sessionsData as $s) {
-            $sessions[] = TrainingSession::firstOrCreate(
+            $sessions[] = TrainingSession::updateOrCreate(
                 ['training_id' => $training->id, 'session_code' => $s['session_code']],
                 array_merge($s, ['training_id' => $training->id])
             );
@@ -179,7 +180,7 @@ class DatabaseSeeder extends Seeder
                     'registration_id'     => $reg->id,
                     'training_session_id' => $sessions[0]->id,
                 ], [
-                    'scanned_by' => $panitia->id,
+                    'scanned_by' => $superAdmin->id,
                     'scanned_at' => '2026-09-20 08:14:00',
                     'status'     => 'present',
                     'source'     => 'camera_scan',
@@ -189,12 +190,147 @@ class DatabaseSeeder extends Seeder
                     'registration_id'     => $reg->id,
                     'training_session_id' => $sessions[1]->id,
                 ], [
-                    'scanned_by' => $panitia->id,
+                    'scanned_by' => $superAdmin->id,
                     'scanned_at' => '2026-09-20 10:05:00',
                     'status'     => 'present',
                     'source'     => 'camera_scan',
                 ]);
             }
         }
+
+        // 7. Seed 50 Butir Soal Pre-Test Pilihan Ganda Asli (4 Opsi A, B, C, D)
+        $this->call(PretestQuestionsSeeder::class);
+
+
+        // 8. Seed Submissions & Grade Requests (Hanya jika ada sample peserta)
+        if (!empty($users)) {
+            $sub1 = \App\Models\QuizSubmission::updateOrCreate(
+                ['submission_code' => 'SUB-HMI-001'],
+                [
+                    'quiz_id' => $quiz1->id,
+                    'user_id' => $users[0]->id,
+                    'participant_name' => $users[0]->name,
+                    'participant_email' => $users[0]->email,
+                    'score' => 100,
+                    'answers' => [
+                        'Q-HMI-101' => 'B. 5 Februari 1947 di Yogyakarta',
+                        'Q-HMI-102' => 'A. Prof. Drs. Lafran Pane',
+                        'Q-HMI-103' => 'B. Terbinanya insan akademis, pencipta, pengabdi yang bernapaskan Islam dan bertanggung jawab atas terwujudnya masyarakat adil makmur yang diridhoi Allah SWT',
+                        'Q-HMI-104' => 'HMI didirikan untuk mempertahankan kemerdekaan Indonesia dan mensyiarkan nilai-nilai Islam yang berkemajuan di lingkungan kampus perguruan tinggi.',
+                    ],
+                    'is_locked' => true,
+                    'submitted_at' => now(),
+                ]
+            );
+
+            if (isset($users[1])) {
+                $sub2 = \App\Models\QuizSubmission::updateOrCreate(
+                    ['submission_code' => 'SUB-HMI-002'],
+                    [
+                        'quiz_id' => $quiz1->id,
+                        'user_id' => $users[1]->id,
+                        'participant_name' => $users[1]->name,
+                        'participant_email' => $users[1]->email,
+                        'score' => 75,
+                        'answers' => [
+                            'Q-HMI-101' => 'B. 5 Februari 1947 di Yogyakarta',
+                            'Q-HMI-102' => 'A. Prof. Drs. Lafran Pane',
+                            'Q-HMI-103' => 'B. Terbinanya insan akademis, pencipta, pengabdi yang bernapaskan Islam dan bertanggung jawab atas terwujudnya masyarakat adil makmur yang diridhoi Allah SWT',
+                            'Q-HMI-104' => 'Latar belakang berdirinya HMI karena dorongan semangat keislaman dan keindonesiaan.',
+                        ],
+                        'is_locked' => true,
+                        'submitted_at' => now(),
+                    ]
+                );
+
+                \App\Models\QuizGradeRequest::updateOrCreate(
+                    ['request_code' => 'REQ-HMI-001'],
+                    [
+                        'submission_id' => $sub2->id,
+                        'quiz_id' => $quiz1->id,
+                        'quiz_title' => 'Pre-Test LK 1: Wawasan Ke-HMI-an, Keislaman & Keindonesiaan',
+                        'participant_id' => 'USR-' . $users[1]->id,
+                        'participant_name' => $users[1]->name,
+                        'requested_by' => 'Kanda Yudi Pratama, S.H. (MOT)',
+                        'request_type' => 'edit_score',
+                        'reason' => 'Peserta menambahkan penjelasan komprehensif pada jawaban essay saat dikonfirmasi dalam forum penelaahan materi.',
+                        'old_score' => 75,
+                        'new_score_requested' => 90,
+                        'status' => 'pending',
+                    ]
+                );
+            }
+
+            // 9. Seed Assessments
+            foreach ($users as $idx => $u) {
+                $pId = "USR-{$u->id}";
+                \App\Models\Assessment::updateOrCreate(
+                    ['participant_id' => $pId],
+                    [
+                        'training_id' => $training->id,
+                        'user_id' => $u->id,
+                        'kognitif' => 75 + ($idx * 4),
+                        'afektif' => 100 - ($idx * 2),
+                        'psikomotorik' => 50 + ($idx * 5),
+                        'violations' => $idx === 0 ? [
+                            [
+                                'id' => 'v1',
+                                'item' => 'Terlambat Hadir Sesi',
+                                'points' => -1,
+                                'session' => 'SES-01',
+                                'time' => '08:15 WIB',
+                            ]
+                        ] : [],
+                        'contributions' => [
+                            [
+                                'id' => 'c1',
+                                'item' => 'Bertanya Pertanyaan Substantif',
+                                'points' => 1,
+                                'symbol' => 'Q',
+                                'session' => 'SES-01',
+                                'time' => '08:30 WIB',
+                            ]
+                        ],
+                        'notes' => 'Catatan evaluasi instruktur',
+                    ]
+                );
+            }
+
+            // 10. Seed Initial Tickets
+            \App\Models\Ticket::updateOrCreate(
+                ['ticket_code' => 'INC-081'],
+                [
+                    'user_id' => $users[0]->id,
+                    'category' => 'QR Token Tidak Terbaca',
+                    'priority' => 'Tinggi',
+                    'msg' => 'Kamera HP peserta retak sehingga scanner sulit membaca token.',
+                    'status' => 'Selesai',
+                    'time' => '19/09/2026 08:30 WIB',
+                    'solution' => 'Presensi manual panitia telah diset Hadir.',
+                    'sender_name' => $users[0]->name,
+                    'sender_role' => 'participant',
+                ]
+            );
+
+            if (isset($users[1])) {
+                \App\Models\Ticket::updateOrCreate(
+                    ['ticket_code' => 'INC-082'],
+                    [
+                        'user_id' => $users[1]->id,
+                        'category' => 'Kendala Teknis Quiz / Ujian',
+                        'priority' => 'Normal',
+                        'msg' => 'Peserta mengalami koneksi putus saat pengerjaan Post-Test.',
+                        'status' => 'Proses',
+                        'time' => '20/09/2026 10:15 WIB',
+                        'solution' => 'Menunggu peninjauan & reset kuis oleh Super Admin.',
+                        'sender_name' => $users[1]->name,
+                        'sender_role' => 'participant',
+                    ]
+                );
+            }
+        }
+
+        // Jalankan Sinkronisasi Data Master Kelas, Admin, Peserta, Presensi, Penilaian, & Kuis
+        $this->call(ClassDataSynchronizationSeeder::class);
     }
 }

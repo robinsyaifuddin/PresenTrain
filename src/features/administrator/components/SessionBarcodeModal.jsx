@@ -4,6 +4,7 @@ import {
   X, QrCode, Clock, CheckCircle2, ShieldCheck, 
   Download, Copy, ExternalLink, RefreshCw, AlertTriangle 
 } from 'lucide-react';
+import { api } from '@/services/api';
 
 export default function SessionBarcodeModal({ session, sessionIndex = 1, onClose }) {
   const [durationMinutes, setDurationMinutes] = useState(15);
@@ -15,7 +16,9 @@ export default function SessionBarcodeModal({ session, sessionIndex = 1, onClose
   const [downloading, setDownloading] = useState(false);
   const [notification, setNotification] = useState('');
 
-  const sessionToken = `ABSEN-SESI-${sessionIndex}-${session?.id || 'KEY'}-${session?.time?.replace(/[^a-zA-Z0-9]/g, '') || '2026'}`;
+  const targetSessionDbId = session?.db_id || session?.id || sessionIndex;
+  const currentExp = expiryTimestamp || (Date.now() + durationMinutes * 60 * 1000);
+  const sessionToken = `ABSEN-SESI-${sessionIndex}-${targetSessionDbId}-EXP${currentExp}`;
   const previewPath = `/${sessionToken}`;
   const fullPreviewUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}${previewPath}` 
@@ -60,6 +63,17 @@ export default function SessionBarcodeModal({ session, sessionIndex = 1, onClose
     };
   }, [isActive, expiryTimestamp]);
 
+  // Escape key handler
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const showToast = (msg) => {
     setNotification(msg);
     setTimeout(() => setNotification(''), 3000);
@@ -70,8 +84,9 @@ export default function SessionBarcodeModal({ session, sessionIndex = 1, onClose
     if (!isAgreed) return;
 
     const expiresAt = Date.now() + durationMinutes * 60 * 1000;
+    const computedToken = `ABSEN-SESI-${sessionIndex}-${targetSessionDbId}-EXP${expiresAt}`;
     const barcodeData = {
-      sessionToken,
+      sessionToken: computedToken,
       expiryTimestamp: expiresAt,
       durationMinutes,
       isActivated: true,
@@ -86,6 +101,11 @@ export default function SessionBarcodeModal({ session, sessionIndex = 1, onClose
       console.error('Failed to save barcode state:', err);
     }
 
+    // Persist to backend database for multi-device sync
+    api.activateSessionBarcode(targetSessionDbId, durationMinutes, computedToken).catch(err => {
+      console.warn('Sync barcode to backend error:', err);
+    });
+
     setExpiryTimestamp(expiresAt);
     setRemainingSeconds(durationMinutes * 60);
     setIsActive(true);
@@ -99,6 +119,9 @@ export default function SessionBarcodeModal({ session, sessionIndex = 1, onClose
     } catch (err) {
       console.error('Failed to clear barcode state:', err);
     }
+
+    // Deactivate on backend database
+    api.deactivateSessionBarcode(targetSessionDbId).catch(() => {});
 
     setIsActive(false);
     setExpiryTimestamp(null);
@@ -198,14 +221,31 @@ export default function SessionBarcodeModal({ session, sessionIndex = 1, onClose
   const isExpired = isActive && remainingSeconds <= 0;
 
   return (
-    <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fade-in">
-      <div className="bg-white rounded-3xl w-full max-w-2xl md:max-w-3xl overflow-hidden shadow-2xl p-5 sm:p-7 space-y-5 border border-slate-200 relative my-auto max-h-[calc(100vh-2rem)] overflow-y-auto font-sans">
+    <div 
+      className="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fade-in select-none"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div 
+        className="bg-white rounded-3xl w-full max-w-2xl md:max-w-3xl overflow-hidden shadow-2xl p-5 sm:p-7 space-y-4 border border-slate-200 relative my-auto max-h-[92dvh] overflow-y-auto font-sans animate-spring-popup"
+        onClick={(e) => e.stopPropagation()}
+      >
         
-        {/* Toast Notification */}
+        {/* Sleek In-Modal Feedback Alert */}
         {notification && (
-          <div className="bg-emerald-600 text-white px-4 py-2.5 rounded-2xl text-xs font-semibold shadow-lg flex items-center justify-between animate-fade-in">
-            <span>{notification}</span>
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <div className="bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-2xl p-3 px-4 flex items-center justify-between text-xs font-semibold animate-spring-popup shadow-xs">
+            <div className="flex items-center space-x-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{notification}</span>
+            </div>
+            <button 
+              type="button" 
+              onClick={() => setNotification('')}
+              className="p-1 rounded-full text-emerald-700 hover:bg-emerald-100 transition-colors cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         )}
 

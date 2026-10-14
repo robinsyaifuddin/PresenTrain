@@ -1,22 +1,54 @@
-# Apache .htaccess configuration for Single Page Application (SPA)
+# PresenTrain Fullstack Apache Configuration (React SPA + Laravel API)
+# Dirancang khusus untuk Shared Hosting Hostinger (public_html)
+
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-l
-  RewriteRule . /index.html [L]
+    RewriteEngine On
+    RewriteBase /
+
+    # 1. Prioritaskan index.html untuk pengunjung web (Frontend React)
+    DirectoryIndex index.html index.php
+
+    # 2. Tangani Authorization Header untuk Laravel Sanctum Bearer Token
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # 3. Request API (/api/...) diarahkan ke Laravel Front Controller (index.php)
+    RewriteRule ^api(/.*)?$ index.php [L,QSA]
+
+    # 4. Aset fisik atau folder yang ada (css, js, gambar, storage link) disajikan langsung
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # 5. Semua rute navigasi aplikasi React (SPA Routing: /login, /dashboard, dll) diarahkan ke index.html
+    RewriteRule ^ index.html [L]
 </IfModule>
 
-# Enable GZIP Compression for text & asset resources
+# Kompresi GZIP untuk Performa Tinggi
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json image/svg+xml
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json image/svg+xml
 </IfModule>
 
-# Security Headers & Caching Controls
+# Keamanan & Performa Header
 <IfModule mod_headers.c>
-  Header set X-Content-Type-Options "nosniff"
-  Header set X-Frame-Options "SAMEORIGIN"
-  Header set X-XSS-Protection "1; mode=block"
+    Header set Connection keep-alive
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Cegah caching pada index.html dan Service Worker agar deploy update langsung terbaca browser
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires 0
+    </FilesMatch>
+
+    <FilesMatch "(sw\.js|registerSW\.js|manifest\.webmanifest)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires 0
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_setenvif.c>
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 </IfModule>

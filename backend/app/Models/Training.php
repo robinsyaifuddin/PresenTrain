@@ -18,6 +18,11 @@ class Training extends Model
         'end_date',
         'status',
         'created_by',
+        'banner_slides',
+    ];
+
+    protected $casts = [
+        'banner_slides' => 'array',
     ];
 
     public function sessions()

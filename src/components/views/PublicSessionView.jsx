@@ -5,6 +5,7 @@ import {
   ShieldCheck, ArrowLeft, Download, UserCheck, Sparkles, Copy, ExternalLink,
   AlertTriangle, Lock, ShieldAlert, XCircle
 } from 'lucide-react';
+import NotificationPopup from '@/components/ui/Feedback/NotificationPopup';
 
 export default function PublicSessionView({ sessionIndex, urlToken, training, siteSettings, onGoBack }) {
   const session = training?.sessions?.[sessionIndex - 1] || {
@@ -175,28 +176,30 @@ export default function PublicSessionView({ sessionIndex, urlToken, training, si
       <div className="absolute top-10 left-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Toast Notification */}
+      {/* Toast Notification (Centered Green Popup 2 Detik) */}
       {notification && (
-        <div className="fixed top-6 z-50 bg-emerald-500 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-2xl flex items-center space-x-2 animate-fade-in">
-          <span>{notification}</span>
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
-        </div>
+        <NotificationPopup
+          message={notification}
+          onClose={() => setNotification('')}
+          duration={1000}
+          type="success"
+        />
       )}
 
-      {/* Main Wide Responsive Card Container (max-w-3xl) */}
-      <div className="bg-white text-slate-900 rounded-3xl max-w-3xl w-full shadow-2xl overflow-hidden border border-slate-200 p-6 md:p-8 space-y-6 relative z-10 animate-fade-in my-auto">
+      {/* Main Wide Responsive Card Container */}
+      <div className="bg-white text-slate-900 rounded-md max-w-3xl w-full shadow-lg overflow-hidden border border-slate-200 p-6 md:p-8 space-y-6 relative z-10 animate-fade-in my-auto">
         
         {/* Top Header Bar */}
         <div className="flex flex-wrap justify-between items-center border-b border-slate-100 pb-4 gap-2">
           <button
             onClick={onGoBack}
-            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-all active:scale-95 cursor-pointer"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Kembali ke Dashboard</span>
           </button>
 
-          <span className="text-xs font-extrabold text-emerald-800 bg-emerald-100 border border-emerald-200 px-3.5 py-1 rounded-full uppercase tracking-wider">
+          <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-md uppercase tracking-wider">
             BARCODE SESI {sessionIndex}
           </span>
         </div>
@@ -418,10 +421,11 @@ export default function PublicSessionView({ sessionIndex, urlToken, training, si
                 <button
                   type="button"
                   onClick={handleCopyLink}
-                  className="px-2.5 py-1 bg-slate-100 hover:bg-emerald-100 text-slate-700 hover:text-emerald-800 rounded-lg flex items-center space-x-1 text-[10px] font-bold transition-colors shrink-0"
+                  className="p-1.5 sm:px-2.5 sm:py-1 bg-slate-100 hover:bg-emerald-100 text-slate-700 hover:text-emerald-800 rounded-lg flex items-center space-x-1 text-[10px] font-bold transition-colors shrink-0"
+                  title={copied ? 'Tersalin' : 'Salin Tautan'}
                 >
                   <Copy className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>{copied ? 'Tersalin' : 'Salin'}</span>
+                  <span className="hidden sm:inline">{copied ? 'Tersalin' : 'Salin'}</span>
                 </button>
               </div>
             </div>

@@ -12,9 +12,11 @@ export default function PesertaLayout({
   onLogout, 
   siteSettings,
   onUpdateUser,
+  onRefresh,
+  isRefreshing,
   children 
 }) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
 
   return (
     <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden min-h-0">
@@ -37,6 +39,8 @@ export default function PesertaLayout({
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           onUpdateUser={onUpdateUser}
+          onRefresh={onRefresh}
+          isRefreshing={isRefreshing}
         />
 
         <div className="block md:hidden shrink-0 w-full z-40 relative">
@@ -47,10 +51,12 @@ export default function PesertaLayout({
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             onUpdateUser={onUpdateUser}
+            onRefresh={onRefresh}
+            isRefreshing={isRefreshing}
           />
         </div>
 
-        <main className="flex-1 min-h-0 overflow-y-auto mobile-scroll-viewport no-scrollbar pb-32 md:pb-8">
+        <main className="flex-1 min-h-0 overflow-y-auto mobile-scroll-viewport no-scrollbar safe-pb-dock">
           {children}
         </main>
 

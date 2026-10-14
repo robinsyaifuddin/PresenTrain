@@ -116,5 +116,25 @@ export const offlineSync = {
     } catch (e) {
       console.warn('Failed to clear pending scans', e);
     }
+  },
+
+  // 5. Hard Purge PWA CacheStorage & Service Worker Registrations
+  clearAppCache: async () => {
+    try {
+      if (typeof window !== 'undefined' && 'caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+      }
+      if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const reg of registrations) {
+          await reg.unregister();
+        }
+      }
+      window.location.reload();
+    } catch (e) {
+      console.warn('Failed to purge app cache', e);
+      window.location.reload();
+    }
   }
 };

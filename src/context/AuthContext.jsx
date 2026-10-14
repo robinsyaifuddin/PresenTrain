@@ -5,7 +5,8 @@ import { INITIAL_ADMIN_LIST } from '@/data/mockData';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children, handleUserLoggedIn, handleUserLoggedOut }) {
-  const initialUser = typeof window !== 'undefined' ? offlineSync.getCachedUserProfile() : null;
+  const hasToken = typeof localStorage !== 'undefined' && !!localStorage.getItem('presentrain_token');
+  const initialUser = typeof window !== 'undefined' && hasToken ? offlineSync.getCachedUserProfile() : null;
   const [currentUser, setCurrentUser] = useState(initialUser);
 
   const initialOnboarded = !!initialUser || (typeof window !== 'undefined' && offlineSync.isOnboarded());
@@ -13,7 +14,7 @@ export function AuthProvider({ children, handleUserLoggedIn, handleUserLoggedOut
 
   const [siteSettings, setSiteSettings] = useState({
     siteName: 'PresenTrain',
-    tagline: 'System Presensi Digital & Training',
+    tagline: 'Sistem Presensi & Evaluasi Training Perkaderan HMI',
     logoUrl: '/logo/logo.png',
     logoLetter: 'P',
     isMaintenance: false,
@@ -45,8 +46,10 @@ export function AuthProvider({ children, handleUserLoggedIn, handleUserLoggedOut
   }, []);
 
   const activeAdminPermission = adminList.find(a => a.email === currentUser?.email) || {
-    canManageAttendance: true,
-    canManageQuiz: true
+    canManageAttendance: currentUser?.can_manage_attendance !== false,
+    canManageGrading: currentUser?.can_manage_assessment !== false,
+    canManageAssessment: currentUser?.can_manage_assessment !== false,
+    canManageQuiz: currentUser?.can_manage_quiz !== false,
   };
 
   const value = {

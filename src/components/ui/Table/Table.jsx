@@ -2,12 +2,12 @@ import React from 'react';
 
 export default function Table({ headers, children, className = '' }) {
   return (
-    <div className={`w-full overflow-x-auto rounded-2xl border border-slate-200 bg-white ${className}`}>
+    <div className={`w-full overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-2xs ${className}`}>
       <table className="w-full text-left border-collapse text-xs md:text-sm">
         <thead>
-          <tr className="bg-slate-50 border-b border-slate-200/80 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
+          <tr className="bg-slate-50 border-b border-slate-200/80 text-slate-500 font-bold uppercase tracking-wider text-[10px] sm:text-[11px]">
             {headers.map((header, idx) => (
-              <th key={idx} className="py-3 px-4">
+              <th key={idx} className="py-2.5 px-2.5 sm:py-3 sm:px-4">
                 {header}
               </th>
             ))}

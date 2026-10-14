@@ -22,10 +22,12 @@ export const ROLE_PREFIXES = {
 export const TAB_ROUTES = {
   super_admin: {
     overview: 'overview',
+    classes_management: 'kelas',
     events_management: 'event-sesi',
+    quiz_management: 'kelola-kuis',
+    rekap_penilaian: 'rekap-penilaian',
     admin_management: 'admin-panitia',
     participants_master: 'master-peserta',
-    site_settings: 'pengaturan-web',
     system_stats: 'audit-log',
     guide: 'panduan',
     helpdesk: 'helpdesk',
@@ -64,15 +66,23 @@ export const SLUG_TO_TAB = {
     'overview': 'overview',
     'beranda': 'overview',
     'dashboard': 'overview',
+    'kelas': 'classes_management',
+    'classes_management': 'classes_management',
+    'kelola-kuis': 'quiz_management',
+    'quiz_management': 'quiz_management',
+    'kuis': 'quiz_management',
+    'rekap-penilaian': 'rekap_penilaian',
+    'rekap_penilaian': 'rekap_penilaian',
+    'penilaian': 'rekap_penilaian',
     'event-sesi': 'events_management',
     'events_management': 'events_management',
     'admin-panitia': 'admin_management',
     'admin_management': 'admin_management',
     'master-peserta': 'participants_master',
     'participants_master': 'participants_master',
-    'pengaturan-web': 'site_settings',
-    'pengaturan': 'site_settings',
-    'site_settings': 'site_settings',
+    'pengaturan-web': 'overview',
+    'pengaturan': 'settings',
+    'site_settings': 'overview',
     'audit-log': 'system_stats',
     'system_stats': 'system_stats',
     'panduan': 'guide',
@@ -199,11 +209,16 @@ export function resolveCurrentRoute(pathname = '/', currentUser = null) {
     };
   }
 
-  // 2. Cek Prefix Role dari URL
+  // 2. Cek Prefix Role atau Auth dari URL
   let targetRole = null;
   let remainingPath = '';
+  let authRoute = null;
 
-  if (pathname.startsWith('/adminutama')) {
+  if (pathname.startsWith('/login') || pathname.startsWith('/masuk')) {
+    authRoute = 'login';
+  } else if (pathname.startsWith('/register') || pathname.startsWith('/daftar')) {
+    authRoute = 'register';
+  } else if (pathname.startsWith('/adminutama')) {
     targetRole = 'super_admin';
     remainingPath = pathname.replace(/^\/adminutama\/?/, '');
   } else if (pathname.startsWith('/administrator')) {
@@ -220,11 +235,12 @@ export function resolveCurrentRoute(pathname = '/', currentUser = null) {
   // 3. User belum login (Unauthenticated)
   if (!currentUser) {
     return {
-      type: 'auth',
+      type: authRoute ? 'auth' : (pathname === '/' || pathname === '' ? 'onboarding' : 'auth'),
+      authMode: authRoute || (pathname.startsWith('/register') ? 'register' : 'login'),
       targetRole,
       requestedSlug: slug,
       tabId: null,
-      isRedirectRequired: targetRole !== null,
+      isRedirectRequired: false,
     };
   }
 
