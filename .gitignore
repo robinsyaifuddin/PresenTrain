@@ -64,3 +64,15 @@ pnpm-debug.log*
 # System Files
 .DS_Store
 Thumbs.db
+
+# Documents, Office Files & Temporary Archives
+dist_upload.zip
+*.xls
+*.xlsx
+*.doc
+*.docx
+*.pdf
+
+# Agent Configuration / Rules (jika tidak ingin di-track)
+AGENTS.md
+
